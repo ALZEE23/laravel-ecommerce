@@ -21,7 +21,7 @@ new #[Layout('layouts.guest')] class extends Component {
 
         // Check user role and redirect accordingly
         if (auth()->user()->isAdmin()) {
-            $this->redirect(route('admin.dashboard', absolute: false), navigate: true);
+            $this->redirect(route('admin-dashboard', absolute: false), navigate: true);
         } else {
             $this->redirect(route('welcome', absolute: false), navigate: true);
         }

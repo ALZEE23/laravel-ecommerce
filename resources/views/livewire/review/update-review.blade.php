@@ -29,7 +29,18 @@
             <div>
                 <x-input-label for="comment" :value="__('Your Review')" />
                 <x-textarea wire:model="comment" id="comment" rows="4" class="block mt-1 w-full" />
+                <x-input-error :messages="$errors->get('comment')" class="mt-2" />
             </div>
+        </div>
+
+        <div class="flex justify-end space-x-4">
+            <x-secondary-button type="button" wire:click="$dispatch('cancel')">
+                {{ __('Cancel') }}
+            </x-secondary-button>
+
+            <x-primary-button>
+                {{ __('Update Review') }}
+            </x-primary-button>
         </div>
     </form>
 </div>

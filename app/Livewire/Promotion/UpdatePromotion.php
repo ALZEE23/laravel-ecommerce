@@ -25,8 +25,8 @@ class UpdatePromotion extends Component
         $this->discount_type = $promotion->discount_type;
         $this->discount_value = $promotion->discount_value;
         $this->usage_limit = $promotion->usage_limit;
-        $this->start_date = $promotion->start_date->format('Y-m-d');
-        $this->end_date = $promotion->end_date->format('Y-m-d');
+        $this->start_date = $promotion->start_date?->format('Y-m-d');
+        $this->end_date = $promotion->end_date?->format('Y-m-d');
         $this->is_active = $promotion->is_active;
     }
 

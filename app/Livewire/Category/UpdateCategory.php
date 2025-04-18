@@ -8,14 +8,14 @@ use Livewire\Component;
 class UpdateCategory extends Component
 {
     public Category $category;
-    public string $name = '';
-    public string $description = '';
+    public ?string $name = null;
+    public ?string $description = null;
 
     public function mount(Category $category)
     {
         $this->category = $category;
         $this->name = $category->name;
-        $this->description = $category->description ?? '';
+        $this->description = $category->description;
     }
 
     public function rules()

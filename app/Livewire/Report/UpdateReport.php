@@ -22,8 +22,8 @@ class UpdateReport extends Component
         $this->type = $report->type;
         $this->description = $report->description;
         $this->total = $report->total;
-        $this->period_start = $report->period_start->format('Y-m-d');
-        $this->period_end = $report->period_end->format('Y-m-d');
+        $this->period_start = $report->period_start?->format('Y-m-d');
+        $this->period_end = $report->period_end?->format('Y-m-d');
     }
 
     public function rules()
