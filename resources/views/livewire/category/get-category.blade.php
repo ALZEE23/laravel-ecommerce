@@ -27,10 +27,10 @@
                         <td class="px-6 py-4">{{ Str::limit($category->description, 50) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $category->products->count() }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                            <a href="{{ route('admin.categories.edit', $category) }}"
+                            <button wire:click="editCategory({{ $category->id }})"
                                 class="text-indigo-600 hover:text-indigo-900">
                                 Edit
-                            </a>
+                            </button>
                             <button wire:click="deleteCategory({{ $category->id }})"
                                 wire:confirm="Are you sure you want to delete this category?"
                                 class="text-red-600 hover:text-red-900">
@@ -45,4 +45,11 @@
             {{ $categories->links() }}
         </div>
     </div>
+
+    @if($editingCategory)
+        <div class="mt-6 bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-medium mb-4">Edit Category</h3>
+            <livewire:category.update-category :category="$editingCategory" :key="$editingCategory->id" />
+        </div>
+    @endif
 </div>

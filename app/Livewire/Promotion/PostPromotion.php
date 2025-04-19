@@ -47,7 +47,7 @@ class PostPromotion extends Component
 
         session()->flash('status', 'Promotion created successfully.');
 
-        return $this->redirect(route('admin.promotions.index'), navigate: true);
+        return $this->redirect(route('promotion'), navigate: true);
     }
 
     public function render()

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class Promotion extends Model
 {
@@ -76,5 +77,16 @@ class Promotion extends Model
             return round(($price * $this->discount_value) / 100, 2);
         }
         return min($price, $this->discount_value);
+    }
+
+    /**
+     * Scope a query to only include valid promotions.
+     */
+    public function scopeValid(Builder $query): Builder
+    {
+        return $query->where('is_active', true)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->whereRaw('(SELECT COUNT(*) FROM orders WHERE promotion_id = promotions.id) < promotions.usage_limit');
     }
 }

@@ -10,6 +10,20 @@ class GetOrder extends Component
 {
     use WithPagination;
 
+    public $editingOrderId = null;
+
+    protected $listeners = ['orderUpdated' => 'handleOrderUpdated'];
+
+    public function editOrder($orderId)
+    {
+        $this->editingOrderId = $orderId;
+    }
+
+    public function handleOrderUpdated()
+    {
+        $this->editingOrderId = null;
+    }
+
     public function deleteOrder(Order $order)
     {
         if (!$order->canBeCancelled()) {
@@ -24,7 +38,8 @@ class GetOrder extends Component
     public function render()
     {
         return view('livewire.order.get-order', [
-            'orders' => Order::with(['user', 'promotion'])->latest()->paginate(10)
+            'orders' => Order::with(['user', 'promotion'])->latest()->paginate(10),
+            'editingOrder' => $this->editingOrderId ? Order::find($this->editingOrderId) : null
         ]);
     }
 }

@@ -57,12 +57,12 @@
             <div class="space-y-2">
                 <div class="flex justify-between">
                     <span>Total:</span>
-                    <span>${{ $order->formatted_total_price }}</span>
+                    <span>Rp{{ $order->formatted_total_price }}</span>
                 </div>
                 @if($order->discount_amount)
                     <div class="flex justify-between text-green-600">
                         <span>Discount:</span>
-                        <span>-${{ $order->formatted_discount_amount }}</span>
+                        <span>-Rp{{ $order->formatted_discount_amount }}</span>
                     </div>
                 @endif
             </div>

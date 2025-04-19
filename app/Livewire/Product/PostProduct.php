@@ -43,7 +43,7 @@ class PostProduct extends Component
 
         session()->flash('status', 'Product created successfully.');
 
-        return $this->redirect(route('admin.products.index'), navigate: true);
+        return $this->redirect(route('product'), navigate: true);
     }
 
     public function render()

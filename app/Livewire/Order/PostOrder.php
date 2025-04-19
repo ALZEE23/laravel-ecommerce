@@ -10,13 +10,12 @@ use Livewire\Component;
 class PostOrder extends Component
 {
     public $user_id;
-    public $products = [];
+    public $product_id;
+    public $quantity = 1;
     public $promotion_id;
     public $payment_method;
     public $shipping_address;
     public $notes;
-    public $selectedProducts = [];
-    public $quantities = [];
 
     public function mount()
     {
@@ -26,8 +25,8 @@ class PostOrder extends Component
     public function rules()
     {
         return [
-            'selectedProducts' => ['required', 'array', 'min:1'],
-            'quantities.*' => ['required', 'integer', 'min:1'],
+            'product_id' => ['required', 'exists:products,id'],
+            'quantity' => ['required', 'integer', 'min:1'],
             'payment_method' => ['required', 'string'],
             'shipping_address' => ['required', 'string'],
             'notes' => ['nullable', 'string'],
@@ -37,12 +36,12 @@ class PostOrder extends Component
 
     public function calculateTotal()
     {
-        $total = 0;
-        foreach ($this->selectedProducts as $productId) {
-            $product = Product::find($productId);
-            $quantity = $this->quantities[$productId] ?? 1;
-            $total += $product->price * $quantity;
+        if (!$this->product_id) {
+            return [0, 0];
         }
+
+        $product = Product::find($this->product_id);
+        $total = $product->price * $this->quantity;
 
         if ($this->promotion_id) {
             $promotion = Promotion::find($this->promotion_id);
@@ -57,37 +56,62 @@ class PostOrder extends Component
 
     public function save()
     {
-        $this->validate();
+        $validated = $this->validate();
+
+        // Check stock availability
+        $product = Product::find($this->product_id);
+        if ($product->stock < $this->quantity) {
+            session()->flash('error', 'Insufficient stock for ' . $product->name);
+            return;
+        }
 
         list($total, $discount) = $this->calculateTotal();
 
-        $order = Order::create([
-            'user_id' => auth()->id(),
-            'total_price' => $total,
-            'promotion_id' => $this->promotion_id,
-            'discount_amount' => $discount,
-            'status' => 'pending',
-            'payment_method' => $this->payment_method,
-            'shipping_address' => $this->shipping_address,
-            'notes' => $this->notes,
-        ]);
+        try {
+            // Start transaction
+            \DB::beginTransaction();
 
-        session()->flash('status', 'Order created successfully.');
+            // Create order
+            $order = Order::create([
+                'user_id' => auth()->id(),
+                'product_id' => $this->product_id,
+                'quantity' => $this->quantity,
+                'total_price' => $total,
+                'promotion_id' => $this->promotion_id,
+                'discount_amount' => $discount,
+                'status' => 'pending',
+                'payment_method' => $this->payment_method,
+                'shipping_address' => $this->shipping_address,
+                'notes' => $this->notes,
+            ]);
 
-        return $this->redirect(route('admin.orders.index'), navigate: true);
+            // Reduce stock
+            $product->decrement('stock', $this->quantity);
+
+            \DB::commit();
+            session()->flash('status', 'Order created successfully.');
+
+            return $this->redirect(route('order'), navigate: true);
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            session()->flash('error', 'Failed to create order: ' . $e->getMessage());
+        }
     }
 
     public function render()
     {
-        $promotions = Promotion::where('is_active', true)
-            ->where('start_date', '<=', now())
-            ->where('end_date', '>=', now())
-            ->get();
-
         return view('livewire.order.post-order', [
-            'promotions' => $promotions,
+            'products' => $this->products,
+            'promotions' => Promotion::valid()->get(),
             'total' => $this->calculateTotal()[0],
             'discount' => $this->calculateTotal()[1],
         ]);
+    }
+
+    public function updatedProductId()
+    {
+        // Reset quantity when product changes
+        $this->quantity = 1;
     }
 }

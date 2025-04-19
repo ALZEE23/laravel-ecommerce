@@ -60,8 +60,7 @@ class UpdatePromotion extends Component
         $this->promotion->update($validated);
 
         session()->flash('status', 'Promotion updated successfully.');
-
-        return $this->redirect(route('admin.promotions.index'), navigate: true);
+        $this->dispatch('promotionUpdated');
     }
 
     public function render()

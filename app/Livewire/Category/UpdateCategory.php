@@ -33,8 +33,7 @@ class UpdateCategory extends Component
         $this->category->update($validated);
 
         session()->flash('status', 'Category updated successfully.');
-
-        return $this->redirect(route('admin.categories.index'), navigate: true);
+        $this->dispatch('categoryUpdated');
     }
 
     public function render()

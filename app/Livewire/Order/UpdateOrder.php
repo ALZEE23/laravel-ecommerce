@@ -52,7 +52,7 @@ class UpdateOrder extends Component
 
         session()->flash('status', 'Order updated successfully.');
 
-        return $this->redirect(route('admin.orders.index'), navigate: true);
+        return $this->redirect(route('order'), navigate: true);
     }
 
     public function render()

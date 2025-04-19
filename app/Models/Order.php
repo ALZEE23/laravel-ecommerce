@@ -17,13 +17,15 @@ class Order extends Model
      */
     protected $fillable = [
         'user_id',
+        'product_id',
+        'quantity',
         'total_price',
         'promotion_id',
         'discount_amount',
         'status',
         'payment_method',
         'shipping_address',
-        'notes'
+        'notes',
     ];
 
     /**
@@ -34,6 +36,7 @@ class Order extends Model
     protected $casts = [
         'total_price' => 'decimal:2',
         'discount_amount' => 'decimal:2',
+        'quantity' => 'integer',
     ];
 
     /**
@@ -42,6 +45,14 @@ class Order extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the product associated with the order.
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 
     /**

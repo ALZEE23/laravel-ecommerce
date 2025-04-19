@@ -1,20 +1,30 @@
 <div>
-    <form wire:submit="save" class="space-y-6">
+    <form wire:submit.prevent="save" class="space-y-6">
         <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-lg font-medium mb-4">Products</h3>
+            <h3 class="text-lg font-medium mb-4">Product</h3>
             <div class="space-y-4">
-                @foreach($products as $product)
-                    <div class="flex items-center space-x-4">
-                        <input type="checkbox" wire:model="selectedProducts" value="{{ $product->id }}"
-                            class="rounded border-gray-300">
-                        <span>{{ $product->name }} - ${{ $product->formatted_price }}</span>
-                        @if(in_array($product->id, $selectedProducts))
-                            <input type="number" wire:model="quantities.{{ $product->id }}"
-                                class="w-20 rounded-md border-gray-300" min="1" max="{{ $product->stock }}">
-                        @endif
+                <div>
+                    <x-input-label for="product_id" :value="__('Select Product')" />
+                    <select wire:model="product_id" id="product_id" class="w-full rounded-md border-gray-300">
+                        <option value="">Select a product</option>
+                        @foreach($products as $product)
+                            <option value="{{ $product->id }}">
+                                {{ $product->name }} - Rp{{ $product->formatted_price }}
+                                (Stock: {{ $product->stock }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <x-input-error :messages="$errors->get('product_id')" class="mt-2" />
+                </div>
+
+                @if($product_id)
+                    <div>
+                        <x-input-label for="quantity" :value="__('Quantity')" />
+                        <x-text-input wire:model="quantity" type="number" min="1"
+                            max="{{ $products->find($product_id)->stock }}" class="w-20" />
+                        <x-input-error :messages="$errors->get('quantity')" class="mt-2" />
                     </div>
-                @endforeach
-                <x-input-error :messages="$errors->get('selectedProducts')" class="mt-2" />
+                @endif
             </div>
         </div>
 
@@ -63,17 +73,17 @@
             <div class="space-y-2">
                 <div class="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>${{ number_format($total, 2) }}</span>
+                    <span>Rp{{ number_format($total, 2) }}</span>
                 </div>
                 @if($discount > 0)
                     <div class="flex justify-between text-green-600">
                         <span>Discount:</span>
-                        <span>-${{ number_format($discount, 2) }}</span>
+                        <span>-Rp{{ number_format($discount, 2) }}</span>
                     </div>
                 @endif
                 <div class="flex justify-between font-bold">
                     <span>Total:</span>
-                    <span>${{ number_format($total - $discount, 2) }}</span>
+                    <span>Rp{{ number_format($total - $discount, 2) }}</span>
                 </div>
             </div>
         </div>

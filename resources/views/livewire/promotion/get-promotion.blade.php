@@ -34,7 +34,7 @@
                             @if($promotion->discount_type === 'percentage')
                                 {{ $promotion->discount_value }}%
                             @else
-                                ${{ number_format($promotion->discount_value, 2) }}
+                                Rp{{ number_format($promotion->discount_value, 2) }}
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -47,15 +47,15 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span
                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    {{ $promotion->isValid() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ $promotion->isValid() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                 {{ $promotion->isValid() ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                            <a href="{{ route('admin.promotions.edit', $promotion) }}"
+                            <button wire:click="editPromotion({{ $promotion->id }})"
                                 class="text-indigo-600 hover:text-indigo-900">
                                 Edit
-                            </a>
+                            </button>
                             <button wire:click="deletePromotion({{ $promotion->id }})"
                                 wire:confirm="Are you sure you want to delete this promotion?"
                                 class="text-red-600 hover:text-red-900">
@@ -70,4 +70,11 @@
             {{ $promotions->links() }}
         </div>
     </div>
+
+    @if($editingPromotion)
+        <div class="mt-6 bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-medium mb-4">Edit Promotion</h3>
+            <livewire:promotion.update-promotion :promotion="$editingPromotion" :key="$editingPromotion->id" />
+        </div>
+    @endif
 </div>

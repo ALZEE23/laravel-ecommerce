@@ -49,19 +49,16 @@ class UpdateProduct extends Component
         $validated = $this->validate();
 
         if ($this->newImage) {
-            // Delete old image if exists
-            if ($this->image) {
-                Storage::disk('public')->delete($this->image);
+            if ($this->product->image) {
+                Storage::disk('public')->delete($this->product->image);
             }
             $validated['image'] = $this->newImage->store('products', 'public');
         }
 
-        unset($validated['newImage']);
         $this->product->update($validated);
 
         session()->flash('status', 'Product updated successfully.');
-
-        return $this->redirect(route('admin.products.index'), navigate: true);
+        $this->dispatch('productUpdated');
     }
 
     public function render()
