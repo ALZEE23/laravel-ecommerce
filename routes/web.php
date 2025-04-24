@@ -35,5 +35,9 @@ Route::view('promotion', 'promotion')
 Route::view('report', 'report')
     ->middleware(['auth', 'verified'])
     ->name('report');    
+
+Route::view('checkout', 'checkout')
+    ->middleware(['auth', 'verified'])
+    ->name('checkout');
     
 require __DIR__.'/auth.php';
