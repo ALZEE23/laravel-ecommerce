@@ -37,8 +37,15 @@ class GetOrder extends Component
 
     public function render()
     {
+        $query = Order::with(['user', 'promotion'])->latest();
+
+        if(!auth()->user()->isAdmin()) {
+            $query->where('user_id',auth()->id());
+        } 
+
+
         return view('livewire.order.get-order', [
-            'orders' => Order::with(['user', 'promotion'])->latest()->paginate(10),
+            'orders' => $query->paginate(10),
             'editingOrder' => $this->editingOrderId ? Order::find($this->editingOrderId) : null
         ]);
     }

@@ -64,6 +64,14 @@ class Order extends Model
     }
 
     /**
+     * Get the checkout associated with the order.
+     */
+    public function checkout()
+    {
+        return $this->hasOne(Checkout::class);
+    }
+
+    /**
      * Check if order can be cancelled.
      */
     public function canBeCancelled(): bool
@@ -85,5 +93,29 @@ class Order extends Model
     public function getFormattedDiscountAmountAttribute(): string
     {
         return number_format($this->discount_amount ?? 0, 2);
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Create checkout automatically when order is created
+        static::created(function ($order) {
+            $order->checkout()->create([
+                'user_id' => $order->user_id,
+                'payment_method' => $order->payment_method,
+                'status' => 'pending'
+            ]);
+        });
+
+        // Update checkout status when order status changes to processing
+        static::updated(function ($order) {
+            if ($order->status === 'processing' && $order->getOriginal('status') === 'pending') {
+                $order->checkout->markAsPaid();
+            }
+        });
     }
 }
