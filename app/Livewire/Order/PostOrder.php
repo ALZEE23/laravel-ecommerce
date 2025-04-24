@@ -117,20 +117,13 @@ class PostOrder extends Component
                 'user_id' => auth()->id(),
                 'product_id' => $this->product_id,
                 'quantity' => $this->quantity,
-                'total_price' => $finalTotal,
+                'total_price' => $finalTotal, 
                 'promotion_id' => $this->promotion_id,
                 'discount_amount' => $this->discount,
                 'status' => 'pending',
                 'payment_method' => $this->payment_method,
                 'shipping_address' => $this->shipping_address,
                 'notes' => $this->notes,
-            ]);
-
-            
-            $order->checkout()->create([
-                'user_id' => auth()->id(),
-                'payment_method' => $this->payment_method,
-                'status' => 'pending'
             ]);
 
             $product->decrement('stock', $this->quantity);
